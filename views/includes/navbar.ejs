@@ -1,0 +1,386 @@
+<nav class="navbar navbar-expand-md hh-navbar sticky-top">
+  <div class="container">
+
+    <a class="navbar-brand" href="/listings">
+      Haven<span>Hub</span><span class="brand-dot ms-1"></span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#havenNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+<div class="collapse navbar-collapse" id="havenNav">
+
+  
+  <ul class="navbar-nav align-items-center gap-2">
+    
+    <li class="nav-item">
+      <a class="nav-link" href="/listings">
+        <i class="bi bi-grid me-1"></i>Explore
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link nav-cta" href="/listings/new">
+        <i class="bi bi-plus-lg"></i>
+<span>Create Home</span>
+      </a>
+    </li>
+
+  </ul>
+
+  <div class="hh-search-wrapper mx-auto">
+
+    <form action="/listings/search" method="GET" class="hh-search-bar">
+
+      <div class="hh-search-section" id="whereSection">
+
+        <label>Where</label>
+
+        <input
+          type="text"
+          name="location"
+          id="locationInput"
+          placeholder="Search destinations"
+          autocomplete="off"
+        >
+
+        <div class="hh-search-dropdown" id="locationDropdown">
+
+          <% searchListings.forEach(listing => { %>
+        
+            <div 
+  class="location-item"
+  data-location="<%= listing.location %>"
+>
+
+  <div class="location-icon">
+
+    <% 
+      let icon = `<i class="fa-solid fa-location-dot"></i>`;
+
+      if(
+        listing.location.includes("Bora Bora") ||
+        listing.location.includes("Tulum") ||
+        listing.location.includes("Ibiza") ||
+        listing.location.includes("Byron Bay")
+      ){
+        icon = `<i class="fa-solid fa-umbrella-beach" style="color: rgb(7, 34, 82);"></i>`;
+      }
+
+      else if(
+        listing.location.includes("Zermatt") ||
+        listing.location.includes("Hallstatt") ||
+        listing.location.includes("Tromsø")
+      ){
+        icon = `<i class="fa-solid fa-mountain" style="color: rgb(7, 34, 82);"></i>`;
+      }
+
+      else if(
+        listing.location.includes("Paris") ||
+        listing.location.includes("Singapore") ||
+        listing.location.includes("Berlin")
+      ){
+        icon = `<i class="fa-solid fa-archway" style="color: rgb(7, 34, 82);"></i>`;
+      }
+
+      else if(
+        listing.location.includes("Muskoka") ||
+        listing.location.includes("Jaipur")
+      ){
+        icon = `<i class="fa-solid fa-cow" style="color: rgb(7, 34, 82);"></i>`;
+      }
+
+      else if(
+        listing.location.includes("Rovaniemi")
+      ){
+        icon = `<i class="fa-regular fa-snowflake" style="color: rgb(7, 34, 82);"></i>`;
+      }
+
+      else if(
+        listing.location.includes("Ubud") ||
+        listing.location.includes("Tegallalang")
+      ){
+        icon = `<i class="fa-solid fa-tree" style="color: rgb(7, 34, 82);"></i>`;
+      }
+
+      else if(
+        listing.location.includes("Santorini") ||
+        listing.location.includes("Sedona")
+      ){
+        icon = `<i class="fa-brands fa-fort-awesome" style="color: rgb(7, 34, 82);"></i>`;
+      }
+    %>
+
+    <%- icon %>
+
+  </div>
+
+  <div class="location-content">
+
+    <h6>
+      <%= listing.location %>, <%= listing.country %>
+    </h6>
+
+    <p>
+      <%= listing.title %>
+    </p>
+
+  </div>
+
+</div>
+        
+          <% }) %>
+        
+        </div>
+
+      </div>
+
+      <div class="hh-search-section" id="dateSection">
+
+        <label>When</label>
+
+        <input
+          type="text"
+          id="dateInput"
+          placeholder="Add dates"
+          readonly
+        >
+
+        <div class="hh-search-dropdown date-dropdown" id="dateDropdown">
+          <input type="date" name="checkin" class="date-field">
+          <input type="date" name="checkout" class="date-field">
+        </div>
+
+      </div>
+
+      <div class="hh-search-section" id="guestSection">
+
+        <label>Who</label>
+
+        <input
+          type="text"
+          id="guestInput"
+          placeholder="Add guests"
+          readonly
+        >
+
+        <div class="hh-search-dropdown guest-dropdown" id="guestDropdown">
+
+          <div class="guest-row">
+            <div>
+              <h6>Adults</h6>
+              <p>Ages 13+</p>
+            </div>
+
+            <div class="guest-counter">
+              <button type="button" class="minus">-</button>
+              <span id="adultCount">0</span>
+              <button type="button" class="plus">+</button>
+            </div>
+          </div>
+
+          <div class="guest-row">
+            <div>
+              <h6>Children</h6>
+              <p>Under 13</p>
+            </div>
+
+            <div class="guest-counter">
+              <button type="button" class="minus-child">-</button>
+              <span id="childCount">0</span>
+              <button type="button" class="plus-child">+</button>
+            </div>
+          </div>
+
+          <div class="guest-row">
+            <div>
+              <h6>Pets</h6>
+            </div>
+
+            <input type="checkbox" name="pets">
+          </div>
+
+        </div>
+
+      </div>
+      <button class="hh-search-btn">
+        <i class="bi bi-search"></i>
+      </button>
+
+    </form>
+
+  </div>
+
+  <ul class="navbar-nav ms-auto align-items-center gap-2">
+
+    <% if(typeof currUser === "undefined" || !currUser){ %>
+
+      <li class="nav-item">
+        <a class="btn hh-btn-outline" href="/login">
+          Login
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="btn hh-btn-primary" href="/signup">
+          Sign Up
+        </a>
+      </li>
+
+    <% } else { %>
+
+      <li class="nav-item">
+        <form action="/logout" method="POST">
+          <button class="btn hh-btn-danger">
+            Logout
+          </button>
+        </form>
+      </li>
+
+    <% } %>
+
+  </ul>
+
+</div>
+  </div>
+</nav>
+
+<script>
+
+  const whereSection =
+    document.getElementById("whereSection");
+  
+  const dateSection =
+    document.getElementById("dateSection");
+  
+  const guestSection =
+    document.getElementById("guestSection");
+  
+  const locationDropdown =
+    document.getElementById("locationDropdown");
+  
+  const dateDropdown =
+    document.getElementById("dateDropdown");
+  
+  const guestDropdown =
+    document.getElementById("guestDropdown");
+  
+  const dateInput =
+    document.getElementById("dateInput");
+  
+  const checkinInput =
+    document.querySelector('input[name="checkin"]');
+  
+  const checkoutInput =
+    document.querySelector('input[name="checkout"]');
+  
+  
+  function closeAllDropdowns(){
+  
+    document
+      .querySelectorAll(".hh-search-dropdown")
+      .forEach(drop => {
+        drop.classList.remove("active");
+      });
+  
+  }
+  
+  
+  
+  whereSection.addEventListener("click",(e)=>{
+  
+    e.stopPropagation();
+  
+    closeAllDropdowns();
+  
+    locationDropdown.classList.add("active");
+  
+  });
+  
+  
+  
+  dateSection.addEventListener("click",(e)=>{
+  
+    e.stopPropagation();
+  
+    closeAllDropdowns();
+  
+    dateDropdown.classList.add("active");
+  
+  });
+  
+  
+  
+  guestSection.addEventListener("click",(e)=>{
+  
+    e.stopPropagation();
+  
+    closeAllDropdowns();
+  
+    guestDropdown.classList.add("active");
+  
+  });
+  
+  
+  
+  function updateDateDisplay(){
+  
+    const checkin =
+      checkinInput.value;
+  
+    const checkout =
+      checkoutInput.value;
+  
+    if(checkin && checkout){
+  
+      const inDate =
+        new Date(checkin);
+  
+      const outDate =
+        new Date(checkout);
+  
+      const options = {
+        day: "numeric",
+        month: "short"
+      };
+  
+      const formattedCheckin =
+        inDate.toLocaleDateString(
+          "en-US",
+          options
+        );
+  
+      const formattedCheckout =
+        outDate.toLocaleDateString(
+          "en-US",
+          options
+        );
+  
+      dateInput.value =
+        `${formattedCheckin} - ${formattedCheckout}`;
+  
+   
+      dateDropdown.classList.remove("active");
+  
+    }
+  
+  }
+  
+  checkinInput.addEventListener(
+    "change",
+    updateDateDisplay
+  );
+  
+  checkoutInput.addEventListener(
+    "change",
+    updateDateDisplay
+  );
+  
+  document.addEventListener("click",()=>{
+  
+    closeAllDropdowns();
+  
+  });
+  
+  </script>

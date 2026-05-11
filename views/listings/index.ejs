@@ -1,0 +1,308 @@
+<% layout("/layouts/boilerplate") %>
+
+<%
+  const categories = [
+    { key: "trending",      label: "Trending",      icon: "fa-solid fa-fire"           },
+    { key: "rooms",         label: "Rooms",         icon: "fa-solid fa-bed"            },
+    { key: "iconic-cities", label: "Iconic Cities", icon: "fa-solid fa-mountain-city"  },
+    { key: "mountain",      label: "Mountain",      icon: "fa-solid fa-mountain"       },
+    { key: "castles",       label: "Castles",       icon: "fa-brands fa-fort-awesome"  },
+    { key: "pools",         label: "Pools",         icon: "fa-solid fa-water-ladder"   },
+    { key: "camps",         label: "Camps",         icon: "fa-solid fa-campground"     },
+    { key: "farms",         label: "Farms",         icon: "fa-solid fa-cow"            },
+    { key: "arctic",        label: "Arctic",        icon: "fa-solid fa-snowflake"      },
+    { key: "beach",         label: "Beach",         icon: "fa-solid fa-umbrella-beach" },
+  ];
+
+  const grouped = {};
+  categories.forEach(c => { grouped[c.key] = []; });
+
+  (allListings || []).forEach(listing => {
+    const cat = (listing.category || "").trim().toLowerCase() || "trending";
+    if (grouped[cat] !== undefined) {
+      grouped[cat].push(listing);
+    } else {
+      grouped["trending"].push(listing);
+    }
+  });
+%>
+
+<section class="hh-hero">
+
+  <div class="hero-filter-wrapper">
+    <div id="filters">
+      <% categories.forEach((cat, idx) => { %>
+        <div
+          class="filter"
+          data-category="<%= cat.key %>"
+          role="button"
+          tabindex="0"
+          aria-label="<%= cat.label %>"
+        >
+          <i class="<%= cat.icon %>"></i>
+          <p><%= cat.label %></p>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 hh-hero-content">
+        <div class="hero-text-box">
+          <div class="hh-hero-eyebrow">
+            <span></span> Curated Stays Worldwide
+          </div>
+          <h1>Wander.<br><em>Stay.</em><br>Belong.</h1>
+          <p>
+            Discover handpicked homes, cabins, and hideaways in destinations
+            you've always dreamed of. Every listing, a story waiting to be yours.
+          </p>
+          <div class="hh-hero-buttons">
+            <button class="btn-hero-primary" id="exploreBtn">
+              <i class="bi bi-compass"></i> Explore Stays
+            </button>
+            <a href="/listings/new" class="btn-hero-ghost">
+              <i class="bi bi-plus-circle"></i> List Your Space
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hh-hero-stats">
+    <div class="stat-item">
+      <div class="stat-number">12k+</div>
+      <div class="stat-label">Happy Travelers</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">80+</div>
+      <div class="stat-label">Destinations</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">4.9★</div>
+      <div class="stat-label">Avg. Rating</div>
+    </div>
+  </div>
+</section>
+
+<section class="why-section">
+  <div class="container">
+    <div class="row align-items-end mb-4">
+      <div class="col-md-6">
+        <div class="section-eyebrow" style="color:var(--gold);">Why HavenHub</div>
+        <h2 class="section-title" style="color:#fff;">Travel smarter,<br>stay better.</h2>
+        <div class="section-divider"></div>
+      </div>
+      <div class="col-md-6">
+        <p class="section-subtitle" style="color:rgba(255,255,255,0.45);">
+          From remote mountain cabins to coastal villas — we make sure every stay is
+          safe, seamless, and unforgettable.
+        </p>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="why-card">
+          <div class="why-icon"><i class="bi bi-shield-check"></i></div>
+          <h4>Verified Listings</h4>
+          <p>Every property is reviewed by our team before it goes live.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="why-card">
+          <div class="why-icon"><i class="bi bi-calendar2-check"></i></div>
+          <h4>Easy Booking</h4>
+          <p>Browse, compare, and book in minutes.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="why-card">
+          <div class="why-icon"><i class="bi bi-headset"></i></div>
+          <h4>24/7 Support</h4>
+          <p>Our team is always reachable before, during, and after your trip.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="categories-wrapper" id="listings-top">
+  <% categories.forEach(cat => { %>
+  <%   const listings = grouped[cat.key] || []; %>
+
+  <section class="cat-section" id="category-<%= cat.key %>">
+    <div class="container-fluid px-4 px-md-5">
+
+      <div class="cat-header">
+        <div class="cat-header-left">
+          <div class="cat-eyebrow">
+            <i class="<%= cat.icon %>"></i> <%= cat.label %>
+          </div>
+          <h2 class="cat-title"><%= cat.label %> Stays</h2>
+        </div>
+
+        <% if (listings.length > 0) { %>
+        <div class="cat-arrows">
+          <button
+            class="cat-arrow-btn"
+            onclick="scrollRow('<%= cat.key %>', -1)"
+            aria-label="Scroll <%= cat.label %> left"
+          >
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <button
+            class="cat-arrow-btn"
+            onclick="scrollRow('<%= cat.key %>', 1)"
+            aria-label="Scroll <%= cat.label %> right"
+          >
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+        <% } %>
+      </div>
+      <% if (listings.length === 0) { %>
+        <div class="cat-empty-state">
+          <div class="cat-empty-icon">
+            <i class="<%= cat.icon %>"></i>
+          </div>
+          <h5>No <%= cat.label %> stays yet</h5>
+          <p>Be the first to list a <%= cat.label.toLowerCase() %> property.</p>
+          <a href="/listings/new" class="cat-empty-cta">
+            <i class="bi bi-plus-circle me-1"></i> Add a Listing
+          </a>
+        </div>
+      <% } else { %>
+        <div class="cat-row" id="row-<%= cat.key %>">
+          <% listings.forEach(listing => { %>
+            <a href="/listings/<%= listing._id %>" class="cat-card text-decoration-none">
+
+              <!-- Image -->
+              <div class="cat-card-img">
+                <img
+                  src="<%= listing.image && listing.image.url
+                           ? listing.image.url
+                           : 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600' %>"
+                  alt="<%= listing.title %>"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600'"
+                >
+                <span class="cat-card-price">
+                  ₹<%= listing.price.toLocaleString('en-IN') %><small>/night</small>
+                </span>
+              </div>
+
+              <!-- Body -->
+              <div class="cat-card-body">
+                <p class="cat-card-loc">
+                  <i class="bi bi-geo-alt-fill"></i>
+                  <%= listing.location %>, <%= listing.country %>
+                </p>
+                <h4 class="cat-card-title"><%= listing.title %></h4>
+                <p class="cat-card-desc"><%= listing.description %></p>
+              </div>
+
+            </a>
+          <% }) %>
+        </div>
+      <% } %>
+
+    </div>
+  </section>
+
+  <% }) %>
+</div>
+<script>
+(function () {
+  'use strict';
+
+  var NAVBAR_H = 78; 
+  var BREATHING = 16;  
+  var OFFSET = NAVBAR_H + BREATHING;  
+
+  function setActive(key) {
+    document.querySelectorAll('.filter').forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.category === key);
+    });
+  }
+
+  function scrollToSection(sectionId) {
+    var section = document.getElementById(sectionId);
+    if (!section) return;
+    var top = section.getBoundingClientRect().top + window.pageYOffset - OFFSET;
+    window.scrollTo({ top: top, behavior: 'smooth' });
+  }
+
+  document.querySelectorAll('.filter').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var key = btn.dataset.category;
+      setActive(key);
+      scrollToSection('category-' + key);
+    });
+
+    btn.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        btn.click();
+      }
+    });
+  });
+
+  var exploreBtn = document.getElementById('exploreBtn');
+  if (exploreBtn) {
+    exploreBtn.addEventListener('click', function () {
+      setActive('trending');
+      scrollToSection('category-trending');
+    });
+  }
+
+  window.scrollRow = function (key, direction) {
+    var row = document.getElementById('row-' + key);
+    if (row) row.scrollBy({ left: direction * 880, behavior: 'smooth' });
+  };
+
+  var ticking = false;
+  window.addEventListener('scroll', function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      var current = '';
+      document.querySelectorAll('.cat-section').forEach(function (sec) {
+       
+        if (sec.getBoundingClientRect().top <= OFFSET + 80) {
+          current = sec.id.replace('category-', '');
+        }
+      });
+      if (current) setActive(current);
+      ticking = false;
+    });
+  }, { passive: true });
+
+  document.querySelectorAll('.cat-row').forEach(function (row) {
+    var isDown = false, startX = 0, startScrollLeft = 0;
+
+    row.addEventListener('mousedown', function (e) {
+      isDown = true;
+      startX = e.pageX - row.offsetLeft;
+      startScrollLeft = row.scrollLeft;
+      row.classList.add('dragging');
+    });
+    row.addEventListener('mouseleave', function () {
+      isDown = false;
+      row.classList.remove('dragging');
+    });
+    row.addEventListener('mouseup', function () {
+      isDown = false;
+      row.classList.remove('dragging');
+    });
+    row.addEventListener('mousemove', function (e) {
+      if (!isDown) return;
+      e.preventDefault();
+      var x = e.pageX - row.offsetLeft;
+      row.scrollLeft = startScrollLeft - (x - startX) * 1.4;
+    });
+  });
+
+})();
+</script>

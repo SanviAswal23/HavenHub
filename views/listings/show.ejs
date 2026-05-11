@@ -1,0 +1,947 @@
+<% layout("/layouts/boilerplate") %>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
+
+<style>
+  .wl-show-page { background: #f7f5f0; min-height: 100vh; }
+
+  .wl-breadcrumb {
+    background: #fff;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+    padding: 0.7rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    backdrop-filter: blur(10px);
+  }
+  .wl-breadcrumb .breadcrumb { margin: 0; font-size: 0.8rem; }
+  .wl-breadcrumb .breadcrumb-item a { color: #555; text-decoration: none; }
+  .wl-breadcrumb .breadcrumb-item a:hover { color: #072252; text-decoration: underline; }
+  .wl-breadcrumb .breadcrumb-item.active { color: #072252; font-weight: 500; }
+
+  .wl-hero-bar {
+    max-width: 1180px;
+    margin: 2rem auto 0.85rem;
+    padding: 0 1.25rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .wl-hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    font-weight: 700;
+    color: #072252;
+    margin: 0 0 0.3rem;
+    line-height: 1.15;
+  }
+  .wl-hero-sub {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    font-size: 0.88rem;
+    color: #555;
+  }
+  .wl-hero-sub .wl-dot { color: #bbb; }
+  .wl-hero-rating { display: flex; align-items: center; gap: 4px; font-weight: 600; color: #072252; }
+  .wl-hero-rating .bi-star-fill { color: #c9a84c; font-size: 0.8rem; }
+  .wl-hero-location { display: flex; align-items: center; gap: 4px; }
+  .wl-hero-location .bi-geo-alt-fill { color: #1a7f7f; font-size: 0.8rem; }
+  .wl-hero-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
+  .wl-icon-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: transparent; border: none; padding: 0.45rem 0.85rem;
+    border-radius: 8px; font-size: 0.85rem; font-weight: 500;
+    color: #333; cursor: pointer; transition: background 0.2s;
+    text-decoration: underline;
+  }
+  .wl-icon-btn:hover { background: rgba(0,0,0,0.06); }
+  .wl-icon-btn.saved { color: #e00b41; }
+
+  .wl-gallery-wrap {
+    max-width: 1180px;
+    margin: 0 auto 2rem;
+    padding: 0 1.25rem;
+  }
+  .wl-gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    border-radius: 18px;
+    overflow: hidden;
+    height: 470px;
+  }
+  .wl-gallery-main { overflow: hidden; cursor: pointer; position: relative; }
+  .wl-gallery-main img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.55s ease;
+    display: block;
+  }
+  .wl-gallery-main:hover img { transform: scale(1.04); }
+  .wl-gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 8px;
+  }
+  .wl-gallery-thumb { position: relative; overflow: hidden; cursor: pointer; }
+  .wl-gallery-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.55s ease; display: block; }
+  .wl-gallery-thumb:hover img { transform: scale(1.07); }
+  .wl-gallery-badge {
+    position: absolute; bottom: 12px; right: 12px;
+    background: rgba(255,255,255,0.95); border: 1.5px solid #072252;
+    color: #072252; font-size: 0.78rem; font-weight: 700;
+    padding: 0.4rem 0.95rem; border-radius: 8px;
+    display: inline-flex; align-items: center; gap: 5px;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .wl-gallery-badge:hover { background: #072252; color: #fff; }
+
+  .wl-gallery-single {
+    height: 470px; border-radius: 18px; overflow: hidden; cursor: pointer;
+  }
+  .wl-gallery-single img {
+    width: 100%; height: 100%; object-fit: cover; transition: transform 0.55s ease; display: block;
+  }
+  .wl-gallery-single:hover img { transform: scale(1.03); }
+
+  .wl-body-grid {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 1.25rem 5rem;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 3.5rem;
+    align-items: start;
+  }
+  .wl-left { min-width: 0; }
+
+  .wl-divider { height: 1px; background: rgba(0,0,0,0.08); margin: 0; }
+
+  .wl-section { padding: 2rem 0; }
+  .wl-basic-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  }
+  .wl-section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem; font-weight: 700; color: #072252; margin: 0 0 0.25rem;
+  }
+  .wl-basic-sub { font-size: 0.88rem; color: #666; margin: 0; display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; }
+  .wl-host-avatar {
+    width: 54px; height: 54px; border-radius: 50%;
+    background: linear-gradient(135deg,#072252,#1a7f7f);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1.3rem; font-weight: 700;
+    border: 2px solid #c9a84c; flex-shrink: 0;
+  }
+
+  /* ── Highlights ── */
+  .wl-highlights { display: flex; flex-direction: column; gap: 1.4rem; }
+  .wl-hi-row { display: flex; align-items: flex-start; gap: 1.25rem; }
+  .wl-hi-icon { font-size: 1.5rem; color: #072252; flex-shrink: 0; margin-top: 1px; }
+  .wl-hi-title { font-weight: 600; font-size: 0.94rem; color: #111; margin: 0 0 2px; }
+  .wl-hi-sub { font-size: 0.82rem; color: #777; margin: 0; line-height: 1.5; }
+
+  /* ── Description ── */
+  .wl-desc-text {
+    font-size: 0.96rem; color: #333; line-height: 1.9; font-weight: 300;
+  }
+  .wl-desc-toggle {
+    background: none; border: none; color: #072252; font-weight: 700;
+    font-size: 0.9rem; cursor: pointer; padding: 0; text-decoration: underline;
+    margin-top: 0.75rem; display: inline-flex; align-items: center; gap: 4px;
+  }
+
+  /* ── Amenities ── */
+  .wl-amenities-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 2rem; margin-bottom: 1.5rem;
+  }
+  .wl-amenity {
+    display: flex; align-items: center; gap: 0.75rem;
+    font-size: 0.92rem; color: #333;
+    padding: 0.55rem 0; border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+  .wl-amenity i { font-size: 1.1rem; color: #072252; }
+  .wl-amenities-btn {
+    background: transparent; border: 1.5px solid #072252;
+    color: #072252; font-size: 0.86rem; font-weight: 700;
+    padding: 0.7rem 1.4rem; border-radius: 8px; cursor: pointer; transition: all 0.2s;
+  }
+  .wl-amenities-btn:hover { background: #072252; color: #fff; }
+
+  /* ── Map ── */
+  .wl-map-sub { font-size: 0.87rem; color: #777; margin-bottom: 1rem; display: flex; align-items: center; gap: 5px; }
+  .wl-map-sub .bi-geo-alt-fill { color: #1a7f7f; }
+  #listing-map {
+    width: 100%; height: 380px;
+    border-radius: 18px; overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.09);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+
+  /* ── Things to know ── */
+  .wl-ttk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .wl-ttk-col h6 { font-size: 0.9rem; font-weight: 700; color: #072252; margin-bottom: 0.85rem; }
+  .wl-ttk-col ul { list-style: none; padding: 0; margin: 0; }
+  .wl-ttk-col ul li { font-size: 0.83rem; color: #555; padding: 0.35rem 0; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 6px; }
+  .wl-ttk-col ul li i { font-size: 0.8rem; color: #999; }
+
+  
+  .wl-owner-actions {
+    display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+    padding: 1.5rem; background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 16px; margin-top: 0.5rem;
+  }
+  .wl-owner-actions-title { font-size: 0.82rem; color: #888; margin-bottom: 0.75rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .btn-wl-edit {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #072252; color: #fff; font-size: 0.86rem; font-weight: 600;
+    padding: 0.65rem 1.4rem; border-radius: 10px; text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-wl-edit:hover { background: #0a3580; color: #fff; transform: translateY(-1px); }
+  .btn-wl-delete {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: transparent; border: 1.5px solid #dc3545; color: #dc3545;
+    font-size: 0.86rem; font-weight: 600; padding: 0.65rem 1.4rem;
+    border-radius: 10px; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-wl-delete:hover { background: #dc3545; color: #fff; }
+  .btn-wl-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: transparent; border: 1.5px solid rgba(0,0,0,0.15); color: #555;
+    font-size: 0.86rem; font-weight: 500; padding: 0.65rem 1.4rem;
+    border-radius: 10px; text-decoration: none; transition: all 0.2s;
+  }
+  .btn-wl-back:hover { border-color: #072252; color: #072252; }
+
+  .wl-booking-card-wrap { position: sticky; top: 80px; }
+  .wl-booking-card {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 20px;
+    padding: 1.75rem;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+  }
+  .wl-bk-price-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 1.4rem; }
+  .wl-bk-price { font-size: 1.55rem; font-weight: 800; color: #072252; }
+  .wl-bk-night { font-size: 0.88rem; color: #777; }
+  .wl-bk-rating { display: flex; align-items: center; gap: 5px; font-size: 0.84rem; margin-bottom: 1.4rem; }
+  .wl-bk-rating .bi-star-fill { color: #c9a84c; }
+  .wl-bk-dates {
+    display: grid; grid-template-columns: 1fr 1fr;
+    border: 1.5px solid #ddd; border-radius: 12px;
+    overflow: hidden; margin-bottom: 0;
+  }
+  .wl-bk-date-field {
+    padding: 0.85rem 1rem; cursor: pointer; transition: background 0.2s;
+    border-right: 1px solid #ddd;
+  }
+  .wl-bk-date-field:last-child { border-right: none; }
+  .wl-bk-date-field:hover { background: #f7f5f0; }
+  .wl-bk-date-label { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #333; margin: 0 0 2px; }
+  .wl-bk-date-val { font-size: 0.85rem; color: #888; margin: 0; }
+  .wl-bk-guests {
+    border: 1.5px solid #ddd; border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding: 0.85rem 1rem; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1.25rem; transition: background 0.2s;
+  }
+  .wl-bk-guests:hover { background: #f7f5f0; }
+  .wl-bk-guests-left { }
+  .wl-bk-guests-label { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #333; margin: 0 0 2px; }
+  .wl-bk-guests-val { font-size: 0.85rem; color: #888; margin: 0; }
+  .wl-bk-reserve-btn {
+    width: 100%; background: linear-gradient(135deg, #e00b41, #b5093a);
+    color: #fff; font-size: 1rem; font-weight: 700;
+    padding: 1rem; border: none; border-radius: 12px;
+    cursor: pointer; transition: all 0.22s;
+    box-shadow: 0 4px 16px rgba(224,11,65,0.3);
+    letter-spacing: 0.02em;
+  }
+  .wl-bk-reserve-btn:hover { background: linear-gradient(135deg, #c5093a, #9c0830); transform: translateY(-1px); box-shadow: 0 6px 22px rgba(224,11,65,0.38); }
+  .wl-bk-note { font-size: 0.78rem; color: #999; text-align: center; margin-top: 0.7rem; }
+  .wl-bk-fee-row { display: flex; justify-content: space-between; font-size: 0.87rem; color: #555; margin-top: 1.1rem; padding-top: 1.1rem; border-top: 1px solid rgba(0,0,0,0.08); }
+  .wl-bk-fee-total { font-weight: 700; color: #072252; }
+
+  
+  .wl-contact-host {
+    margin-top: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: #fff; border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 16px; text-align: center;
+  }
+  .wl-contact-host .wl-ch-icon { font-size: 2rem; color: #c9a84c; margin-bottom: 0.5rem; }
+  .wl-contact-host p { font-size: 0.83rem; color: #666; margin-bottom: 0.75rem; }
+  .wl-contact-host button {
+    background: transparent; border: 1.5px solid #072252; color: #072252;
+    font-size: 0.85rem; font-weight: 700; padding: 0.55rem 1.25rem;
+    border-radius: 8px; cursor: pointer; transition: all 0.2s; width: 100%;
+  }
+  .wl-contact-host button:hover { background: #072252; color: #fff; }
+
+  .wl-reviews-section {
+    max-width: 1180px; margin: 0 auto; padding: 0 1.25rem 5rem;
+  }
+
+  /* ── Review stats header ── */
+  .wl-rev-header {
+    display: flex; align-items: center; gap: 0.7rem; margin-bottom: 2rem;
+  }
+  .wl-rev-star-big { color: #c9a84c; font-size: 1.3rem; }
+  .wl-rev-avg { font-size: 1.5rem; font-weight: 800; color: #072252; }
+  .wl-rev-dot { color: #ccc; }
+  .wl-rev-count { font-size: 1rem; color: #555; }
+
+  /* ── Review grid ── */
+  .wl-rev-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 2.5rem; }
+
+  .wl-rev-card {
+    background: #fff; border: 1px solid rgba(0,0,0,0.07);
+    border-radius: 16px; padding: 1.4rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    transition: box-shadow 0.25s, transform 0.25s;
+    position: relative;
+  }
+  .wl-rev-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.1); transform: translateY(-2px); }
+
+  .wl-rev-card-top { display: flex; align-items: center; gap: 0.85rem; margin-bottom: 0.85rem; }
+  .wl-rev-avatar {
+    width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, #072252, #1a7f7f);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 1.05rem;
+  }
+  .wl-rev-name { font-weight: 700; font-size: 0.92rem; color: #111; margin: 0 0 2px; }
+  .wl-rev-date { font-size: 0.76rem; color: #aaa; margin: 0; }
+  .wl-rev-stars { display: flex; gap: 2px; margin-bottom: 0.75rem; }
+  .wl-rev-stars .bi-star-fill { color: #c9a84c; font-size: 0.75rem; }
+  .wl-rev-stars .bi-star { color: #ddd; font-size: 0.75rem; }
+  .wl-rev-comment { font-size: 0.9rem; color: #444; line-height: 1.7; margin: 0; }
+  .wl-rev-delete-btn {
+    position: absolute; bottom: 1rem; right: 1rem;
+    background: transparent; border: 1px solid #ddd;
+    color: #999; font-size: 0.76rem; padding: 0.3rem 0.7rem;
+    border-radius: 6px; cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .wl-rev-delete-btn:hover { border-color: #dc3545; color: #dc3545; }
+
+  /* ── Empty reviews state ── */
+  .wl-rev-empty {
+    text-align: center; padding: 3rem 1.5rem;
+    border: 2px dashed rgba(0,0,0,0.1); border-radius: 16px;
+    margin-bottom: 2.5rem;
+  }
+  .wl-rev-empty-icon { font-size: 2.5rem; color: #c9a84c; margin-bottom: 1rem; }
+  .wl-rev-empty h5 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem; font-weight: 700; color: #072252; margin-bottom: 0.4rem;
+  }
+  .wl-rev-empty p { font-size: 0.88rem; color: #999; }
+
+  /* ── Review form ── */
+  .wl-rev-form-wrap {
+    background: #fff; border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 20px; padding: 2rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+  .wl-rev-form-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem; font-weight: 700; color: #072252;
+    margin-bottom: 0.35rem;
+  }
+  .wl-rev-form-sub { font-size: 0.85rem; color: #999; margin-bottom: 1.5rem; }
+  .wl-rev-textarea {
+    width: 100%; border: 1.5px solid rgba(0,0,0,0.12); border-radius: 12px;
+    padding: 1rem 1.1rem; font-size: 0.93rem; color: #333; resize: vertical;
+    min-height: 130px; outline: none; transition: border-color 0.2s;
+    font-family: inherit; background: #fdfcfa;
+  }
+  .wl-rev-textarea:focus { border-color: #072252; background: #fff; }
+  .wl-rev-submit-btn {
+    background: #072252; color: #fff; border: none;
+    font-size: 0.92rem; font-weight: 700;
+    padding: 0.85rem 2rem; border-radius: 10px;
+    cursor: pointer; transition: all 0.22s;
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 1rem;
+  }
+  .wl-rev-submit-btn:hover { background: #0a3580; transform: translateY(-1px); }
+  .wl-rev-textarea-label { font-size: 0.83rem; font-weight: 700; color: #444; margin-bottom: 0.5rem; display: block; letter-spacing: 0.02em; }
+
+  .wl-rating-section { margin-bottom: 1.25rem; }
+  .wl-rating-label { font-size: 0.83rem; font-weight: 700; color: #444; margin-bottom: 0.6rem; display: block; letter-spacing: 0.02em; }
+  .wl-star-picker { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 4px; }
+  .wl-star-picker input[type="radio"] { display: none; }
+  .wl-star-picker label { font-size: 1.75rem; cursor: pointer; color: #ddd; transition: color 0.12s; line-height: 1; }
+  .wl-star-picker label:hover,
+  .wl-star-picker label:hover ~ label { color: #c9a84c; }
+  .wl-star-picker input:checked + label,
+  .wl-star-picker input:checked + label ~ label { color: #c9a84c; }
+
+  .wl-toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(10px);
+    background: #072252; color: #fff; font-size: 0.88rem; font-weight: 600;
+    padding: 0.75rem 1.5rem; border-radius: 50px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    opacity: 0; pointer-events: none; z-index: 9999;
+    transition: opacity 0.3s, transform 0.3s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .wl-toast.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 1024px) {
+    .wl-body-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .wl-booking-card-wrap { position: static; }
+    .wl-booking-card { max-width: 520px; }
+    .wl-rev-grid { grid-template-columns: 1fr 1fr; }
+    .wl-ttk-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .wl-gallery { grid-template-columns: 1fr; height: 300px; }
+    .wl-gallery-grid { display: none; }
+    .wl-gallery-main { border-radius: 0; }
+    .wl-rev-grid { grid-template-columns: 1fr; }
+    .wl-ttk-grid { grid-template-columns: 1fr; }
+    .wl-hero-bar { margin-top: 1.2rem; }
+    .wl-hero-title { font-size: 1.5rem; }
+    .wl-booking-card { max-width: 100%; }
+    .wl-amenities-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .wl-gallery-single { height: 240px; }
+    .wl-bk-dates { grid-template-columns: 1fr; }
+    .wl-bk-date-field { border-right: none; border-bottom: 1px solid #ddd; }
+  }
+
+  .wl-reveal {
+    opacity: 0; transform: translateY(22px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  .wl-reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+
+<div class="wl-show-page">
+
+  <div class="wl-breadcrumb">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/"><i class="bi bi-house me-1"></i>Home</a></li>
+          <li class="breadcrumb-item"><a href="/listings">Listings</a></li>
+          <li class="breadcrumb-item active"><%= listing.title %></li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <div class="wl-hero-bar wl-reveal">
+    <div>
+      <h1 class="wl-hero-title"><%= listing.title %></h1>
+      <div class="wl-hero-sub">
+        <span class="wl-hero-rating">
+          <i class="bi bi-star-fill"></i> 4.9
+        </span>
+        <span class="wl-dot">·</span>
+        <span><u style="cursor:pointer;" onclick="document.getElementById('wl-reviews-anchor').scrollIntoView({behavior:'smooth'})">
+          <%= (listing.reviews || []).length %> review<%= (listing.reviews || []).length !== 1 ? 's' : '' %>
+        </u></span>
+        <span class="wl-dot">·</span>
+        <span class="wl-hero-location">
+          <i class="bi bi-geo-alt-fill"></i>
+          <%= listing.location %>, <%= listing.country %>
+        </span>
+      </div>
+    </div>
+
+    <div class="wl-hero-actions">
+      <button class="wl-icon-btn" id="wl-share-btn" onclick="handleShare()">
+        <i class="bi bi-box-arrow-up"></i> Share
+      </button>
+      <button class="wl-icon-btn" id="wl-save-btn" onclick="toggleSave(this)">
+        <i class="bi bi-heart"></i> Save
+      </button>
+    </div>
+  </div>
+
+  <%
+    const imgUrl = listing.image && listing.image.url ? listing.image.url : "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&q=80";
+    const placeholders = [
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=75",
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&q=75",
+      "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?w=600&q=75",
+      "https://images.unsplash.com/photo-1505693314120-0d443867891c?w=600&q=75"
+    ];
+  %>
+  <div class="wl-gallery-wrap wl-reveal" style="transition-delay:0.1s">
+    <div class="wl-gallery">
+      <div class="wl-gallery-main">
+        <img src="<%= imgUrl %>" alt="<%= listing.title %>">
+      </div>
+      <div class="wl-gallery-grid">
+        <% for (let i = 0; i < 4; i++) { %>
+        <div class="wl-gallery-thumb <%= i === 3 ? 'last-thumb' : '' %>">
+          <img src="<%= i === 0 ? imgUrl : placeholders[i] %>" alt="Photo <%= i+2 %>" loading="lazy">
+          <% if (i === 3) { %>
+          <button class="wl-gallery-badge"><i class="bi bi-grid-3x3-gap"></i> Show all photos</button>
+          <% } %>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <div class="wl-body-grid">
+
+    <div class="wl-left">
+
+      <div class="wl-section wl-reveal" style="padding-top:0">
+        <div class="wl-basic-row">
+          <div>
+            <h2 class="wl-section-title">Hosted by <%= listing.owner && listing.owner.username ? listing.owner.username : "Wanderlust Host" %></h2>
+            <p class="wl-basic-sub">
+              <span>Entire home</span>
+              <span class="wl-dot">·</span>
+              <span>4 guests</span>
+              <span class="wl-dot">·</span>
+              <span>2 bedrooms</span>
+              <span class="wl-dot">·</span>
+              <span>1 bath</span>
+            </p>
+          </div>
+          <div class="wl-host-avatar">
+            <%= (listing.owner && listing.owner.username) ? listing.owner.username.charAt(0).toUpperCase() : "W" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="wl-divider"></div>
+
+      <div class="wl-section wl-reveal">
+        <div class="wl-highlights">
+          <div class="wl-hi-row">
+            <span class="wl-hi-icon"><i class="bi bi-house-heart-fill"></i></span>
+            <div>
+              <p class="wl-hi-title">Entire place to yourself</p>
+              <p class="wl-hi-sub">You'll have the whole space — private entrance and all.</p>
+            </div>
+          </div>
+          <div class="wl-hi-row">
+            <span class="wl-hi-icon"><i class="bi bi-patch-check-fill"></i></span>
+            <div>
+              <p class="wl-hi-title">Enhanced cleaning protocols</p>
+              <p class="wl-hi-sub">This host follows Wanderlust's verified cleaning standards.</p>
+            </div>
+          </div>
+          <div class="wl-hi-row">
+            <span class="wl-hi-icon"><i class="bi bi-calendar2-check-fill"></i></span>
+            <div>
+              <p class="wl-hi-title">Free cancellation for 48 hours</p>
+              <p class="wl-hi-sub">Get a full refund if you change your mind within 48 hours of booking.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wl-divider"></div>
+
+      <div class="wl-section wl-reveal">
+        <h3 class="wl-section-title" style="margin-bottom:1rem">About this place</h3>
+        <div class="wl-desc-text" id="wl-desc-text">
+          <span id="wl-desc-short"><%= listing.description.substring(0, 220) %><% if (listing.description.length > 220) { %>…<% } %></span>
+          <% if (listing.description.length > 220) { %>
+          <span id="wl-desc-full" style="display:none"><%= listing.description %></span>
+          <br>
+          <button class="wl-desc-toggle" onclick="toggleDesc()" id="wl-desc-btn">
+            Show more <i class="bi bi-chevron-down" id="wl-desc-chevron"></i>
+          </button>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="wl-divider"></div>
+
+      <div class="wl-section wl-reveal">
+        <h3 class="wl-section-title" style="margin-bottom:1.25rem">What this place offers</h3>
+        <div class="wl-amenities-grid">
+          <div class="wl-amenity"><i class="bi bi-wifi"></i> High-Speed WiFi</div>
+          <div class="wl-amenity"><i class="bi bi-thermometer-sun"></i> Air Conditioning</div>
+          <div class="wl-amenity"><i class="bi bi-tv"></i> Smart TV</div>
+          <div class="wl-amenity"><i class="bi bi-p-square-fill"></i> Free Parking</div>
+          <div class="wl-amenity"><i class="bi bi-water"></i> Pool Access</div>
+          <div class="wl-amenity"><i class="bi bi-cup-hot-fill"></i> Breakfast Included</div>
+          <div class="wl-amenity"><i class="bi bi-door-open-fill"></i> Self Check-in</div>
+          <div class="wl-amenity"><i class="bi bi-bag-fill"></i> Luggage Dropoff</div>
+        </div>
+        <button class="wl-amenities-btn" onclick="alert('Full amenities list coming soon!')">
+          Show all amenities
+        </button>
+      </div>
+
+      <div class="wl-divider"></div>
+
+      <%
+        const coords = listing.geometry && listing.geometry.coordinates;
+        const hasMap = coords && coords.length === 2 && coords[0] !== 0 && coords[1] !== 0;
+      %>
+      <% if (hasMap) { %>
+      <div class="wl-section wl-reveal">
+        <h3 class="wl-section-title" style="margin-bottom:0.6rem">Where you'll be</h3>
+        <p class="wl-map-sub">
+          <i class="bi bi-geo-alt-fill"></i>
+          <%= listing.location %>, <%= listing.country %>
+          &mdash; Exact location provided after booking.
+        </p>
+        <div id="listing-map" data-coords='<%= JSON.stringify(coords) %>'></div>
+      </div>
+      <% } %>
+
+      <div class="wl-divider"></div>
+
+      <div class="wl-section wl-reveal">
+        <h3 class="wl-section-title" style="margin-bottom:1.25rem">Things to know</h3>
+        <div class="wl-ttk-grid">
+          <div class="wl-ttk-col">
+            <h6>House rules</h6>
+            <ul>
+              <li><i class="bi bi-clock"></i> Check-in after 3:00 PM</li>
+              <li><i class="bi bi-clock-history"></i> Checkout by 11:00 AM</li>
+              <li><i class="bi bi-people-fill"></i> 4 guests maximum</li>
+              <li><i class="bi bi-slash-circle"></i> No smoking</li>
+              <li><i class="bi bi-slash-circle"></i> No pets</li>
+            </ul>
+          </div>
+          <div class="wl-ttk-col">
+            <h6>Safety &amp; property</h6>
+            <ul>
+              <li><i class="bi bi-shield-check"></i> Carbon monoxide alarm</li>
+              <li><i class="bi bi-shield-check"></i> Smoke alarm</li>
+              <li><i class="bi bi-file-earmark-text"></i> Security deposit required</li>
+              <li><i class="bi bi-camera-video-off"></i> No exterior cameras</li>
+            </ul>
+          </div>
+          <div class="wl-ttk-col">
+            <h6>Cancellation policy</h6>
+            <ul>
+              <li><i class="bi bi-check-circle"></i> Free cancellation 48 hrs</li>
+              <li><i class="bi bi-x-circle"></i> Non-refundable after 48 hrs</li>
+              <li><i class="bi bi-info-circle"></i> Review full policy before booking</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <% if(typeof currUser !== "undefined" && currUser && listing.owner && currUser._id.equals(listing.owner._id)) { %>
+      <div class="wl-divider"></div>
+      <div class="wl-section wl-reveal">
+        <div class="wl-owner-actions">
+          <div style="width:100%">
+            <p class="wl-owner-actions-title"><i class="bi bi-person-badge me-1"></i> You own this listing</p>
+          </div>
+          <a href="/listings/<%= listing._id %>/edit" class="btn-wl-edit">
+            <i class="bi bi-pencil-square"></i> Edit Listing
+          </a>
+          <form action="/listings/<%=listing._id%>?_method=DELETE" method="POST" style="display:inline;">
+            <button type="submit" class="btn-wl-delete"
+              onclick="return confirm('Are you sure you want to delete this listing?')">
+              <i class="bi bi-trash3"></i> Delete
+            </button>
+          </form>
+          <a href="/listings" class="btn-wl-back">
+            <i class="bi bi-arrow-left"></i> Back
+          </a>
+        </div>
+      </div>
+      <% } %>
+
+    </div>
+    <div class="wl-booking-card-wrap wl-reveal" style="transition-delay:0.2s">
+      <div class="wl-booking-card">
+        <div class="wl-bk-price-row">
+          <span class="wl-bk-price">₹<%= listing.price.toLocaleString("en-IN") %></span>
+          <span class="wl-bk-night">/ night</span>
+        </div>
+        <div class="wl-bk-rating">
+          <i class="bi bi-star-fill"></i>
+          <strong>4.9</strong>
+          <span style="color:#ddd">·</span>
+          <span style="color:#777"><%= (listing.reviews || []).length %> reviews</span>
+          <span style="margin-left:auto; font-size:0.75rem; background:#f0ece3; color:#666; padding:2px 8px; border-radius:20px;"><i class="bi bi-patch-check-fill" style="color:#c9a84c"></i> Verified</span>
+        </div>
+
+        <div class="wl-bk-dates">
+          <div class="wl-bk-date-field">
+            <p class="wl-bk-date-label">Check-in</p>
+            <p class="wl-bk-date-val">Add date</p>
+          </div>
+          <div class="wl-bk-date-field">
+            <p class="wl-bk-date-label">Checkout</p>
+            <p class="wl-bk-date-val">Add date</p>
+          </div>
+        </div>
+        <div class="wl-bk-guests">
+          <div class="wl-bk-guests-left">
+            <p class="wl-bk-guests-label">Guests</p>
+            <p class="wl-bk-guests-val">1 guest</p>
+          </div>
+          <i class="bi bi-chevron-down" style="color:#777; font-size:0.8rem;"></i>
+        </div>
+
+        <button class="wl-bk-reserve-btn" onclick="handleReserve()">Reserve</button>
+        <p class="wl-bk-note">You won't be charged yet</p>
+
+        <div class="wl-bk-fee-row">
+          <span>₹<%= listing.price.toLocaleString("en-IN") %> × 5 nights</span>
+          <span>₹<%= (listing.price * 5).toLocaleString("en-IN") %></span>
+        </div>
+        <div class="wl-bk-fee-row">
+          <span>Cleaning fee</span>
+          <span>₹1,500</span>
+        </div>
+        <div class="wl-bk-fee-row">
+          <span>Service fee</span>
+          <span>₹<%= Math.round(listing.price * 0.12).toLocaleString("en-IN") %></span>
+        </div>
+        <div class="wl-bk-fee-row wl-bk-fee-total" style="border-top: 1.5px solid rgba(0,0,0,0.12); margin-top:0.75rem; padding-top:0.9rem; font-size:0.93rem;">
+          <span>Total</span>
+          <span>₹<%= (listing.price * 5 + 1500 + Math.round(listing.price * 0.12)).toLocaleString("en-IN") %></span>
+        </div>
+      </div>
+
+      <div class="wl-contact-host">
+        <div class="wl-ch-icon"><i class="bi bi-chat-heart-fill"></i></div>
+        <p>Have questions about this place? Reach out to the host.</p>
+        <button onclick="showToast('Message feature coming soon!')"><i class="bi bi-envelope me-1"></i> Contact Host</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="wl-reviews-anchor"></div>
+  <div class="wl-reviews-section">
+    <div class="wl-divider" style="margin-bottom:3rem"></div>
+
+    <div class="wl-rev-header wl-reveal">
+      <i class="bi bi-star-fill wl-rev-star-big"></i>
+      <span class="wl-rev-avg">4.9</span>
+      <span class="wl-rev-dot">·</span>
+      <span class="wl-rev-count">
+        <%= (listing.reviews || []).length %> review<%= (listing.reviews || []).length !== 1 ? 's' : '' %>
+      </span>
+    </div>
+
+    <% if ((listing.reviews || []).length > 0) { %>
+    <div class="wl-rev-grid">
+      <% (listing.reviews || []).forEach(review => { %>
+      <div class="wl-rev-card wl-reveal">
+        <div class="wl-rev-card-top">
+          <div class="wl-rev-avatar">
+            <%= review.author ? review.author.username.charAt(0).toUpperCase() : "A" %>
+          </div>
+          <div>
+            <p class="wl-rev-name"><%= review.author ? review.author.username : "Anonymous" %></p>
+            <p class="wl-rev-date">Wanderlust traveller</p>
+          </div>
+        </div>
+        <div class="wl-rev-stars">
+          <% for (let s = 1; s <= 5; s++) { %>
+            <i class="bi bi-star<%= s <= review.rating ? '-fill' : '' %>"></i>
+          <% } %>
+        </div>
+        <p class="wl-rev-comment"><%= review.comment %></p>
+        <% if(typeof currUser !== "undefined" && currUser && review.author && currUser._id.equals(review.author._id)) { %>
+        <form action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST" style="position:absolute;bottom:1rem;right:1rem;">
+          <button class="wl-rev-delete-btn" type="submit">
+            <i class="bi bi-trash"></i> Delete
+          </button>
+        </form>
+        <% } %>
+      </div>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <div class="wl-rev-empty wl-reveal">
+      <div class="wl-rev-empty-icon"><i class="bi bi-chat-square-heart"></i></div>
+      <h5>No reviews yet</h5>
+      <p>Be the first to share your experience at this stunning property.</p>
+    </div>
+    <% } %>
+
+    <% const isLoggedIn = typeof currUser !== "undefined" && !!currUser; %>
+    <% if (isLoggedIn) { %>
+    <div class="wl-rev-form-wrap wl-reveal">
+      <h3 class="wl-rev-form-title">Leave a Review</h3>
+      <p class="wl-rev-form-sub">Share your honest experience to help future travellers.</p>
+
+      <form action="/listings/<%= listing._id %>/reviews"
+            method="POST"
+            class="needs-validation"
+            novalidate>
+
+        <div class="wl-rating-section">
+          <label class="wl-rating-label">Your Rating</label>
+          <div class="wl-star-picker" id="wl-star-picker" aria-label="Star rating">
+            <input type="radio" id="rate5" name="review[rating]" value="5" />
+            <label for="rate5" title="5 stars">&#9733;</label>
+            <input type="radio" id="rate4" name="review[rating]" value="4" />
+            <label for="rate4" title="4 stars">&#9733;</label>
+            <input type="radio" id="rate3" name="review[rating]" value="3" />
+            <label for="rate3" title="3 stars">&#9733;</label>
+            <input type="radio" id="rate2" name="review[rating]" value="2" />
+            <label for="rate2" title="2 stars">&#9733;</label>
+            <input type="radio" id="rate1" name="review[rating]" value="1" />
+            <label for="rate1" title="1 star">&#9733;</label>
+          </div>
+          <div id="ratingError" style="display:none; font-size:0.8rem; color:#dc3545; margin-top:4px;">
+            Please select a star rating.
+          </div>
+        </div>
+
+        <label class="wl-rev-textarea-label" for="comment">Your Review</label>
+        <textarea id="comment"
+                  name="review[comment]"
+                  class="wl-rev-textarea"
+                  rows="5"
+                  placeholder="What made your stay special? Any tips for future guests?"
+                  minlength="5"
+                  required></textarea>
+        <div class="invalid-feedback" style="display:none; font-size:0.8rem; color:#dc3545;" id="commentError">
+          Review must be at least 5 characters.
+        </div>
+
+        <button type="submit" class="wl-rev-submit-btn">
+          <i class="bi bi-send-fill"></i> Submit Review
+        </button>
+
+      </form>
+    </div>
+    <% } %>
+
+  </div>
+
+</div>
+
+<div class="wl-toast" id="wl-toast"><i class="bi bi-check-circle-fill"></i> <span id="wl-toast-msg"></span></div>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+(() => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.wl-reveal').forEach(el => observer.observe(el));
+})();
+
+function toggleDesc() {
+  const s = document.getElementById('wl-desc-short');
+  const f = document.getElementById('wl-desc-full');
+  const btn = document.getElementById('wl-desc-btn');
+  const chevron = document.getElementById('wl-desc-chevron');
+  const expanded = f.style.display !== 'none';
+  s.style.display = expanded ? 'inline' : 'none';
+  f.style.display = expanded ? 'none' : 'inline';
+  btn.innerHTML = expanded ? 'Show more <i class="bi bi-chevron-down" id="wl-desc-chevron"></i>' : 'Show less <i class="bi bi-chevron-up" id="wl-desc-chevron"></i>';
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('wl-toast');
+  document.getElementById('wl-toast-msg').textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function handleShare() {
+  if (navigator.share) {
+    navigator.share({ title: '<%= listing.title %>', url: window.location.href }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(window.location.href).then(() => showToast('Link copied to clipboard!'));
+  }
+}
+
+function toggleSave(btn) {
+  const saved = btn.classList.toggle('saved');
+  btn.innerHTML = saved
+    ? '<i class="bi bi-heart-fill" style="color:#e00b41"></i> Saved'
+    : '<i class="bi bi-heart"></i> Save';
+  showToast(saved ? 'Saved to your wishlist' : 'Removed from wishlist');
+}
+
+function handleReserve() {
+  showToast('Booking flow coming soon!');
+}
+
+(() => {
+  const form = document.querySelector('.needs-validation');
+  if (!form) return;
+  form.addEventListener('submit', e => {
+    const textarea = form.querySelector('textarea');
+    const ratingError = document.getElementById('ratingError');
+    const commentError = document.getElementById('commentError');
+    let valid = true;
+    const ratingChecked = form.querySelector('input[name="review[rating]"]:checked');
+    if (!ratingChecked) {
+      ratingError.style.display = 'block';
+      valid = false;
+    } else {
+      ratingError.style.display = 'none';
+    }
+
+    if (!textarea.value || textarea.value.trim().length < 5) {
+      commentError.style.display = 'block';
+      textarea.style.borderColor = '#dc3545';
+      valid = false;
+    } else {
+      commentError.style.display = 'none';
+      textarea.style.borderColor = '';
+    }
+
+    if (!valid) { e.preventDefault(); e.stopPropagation(); }
+    form.classList.add('was-validated');
+  });
+})();
+</script>
+
+<% if (hasMap) { %>
+<script>
+(() => {
+  const mapEl = document.getElementById("listing-map");
+  const coords = JSON.parse(mapEl.dataset.coords);
+  const lon = coords[0];
+  const lat = coords[1];
+
+  const map = L.map("listing-map").setView([lat, lon], 12);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "&copy; OpenStreetMap contributors",
+  }).addTo(map);
+
+  L.circle([lat, lon], {
+    radius: 1200,
+    color: "#072252",
+    fillColor: "#072252",
+    fillOpacity: 0.2
+  }).addTo(map);
+
+  const airbnbIcon = L.divIcon({
+    className: "airbnb-marker",
+    html: `<div class="marker-wrapper"><i class="fa-brands fa-airbnb"></i><div class="pulse-ring"></div></div>`,
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+  });
+
+  const marker = L.marker([lat, lon], { icon: airbnbIcon }).addTo(map);
+  marker.on("click", () => map.flyTo([lat, lon], 15, { animate: true, duration: 1.5 }));
+})();
+</script>
+<% } %>

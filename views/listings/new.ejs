@@ -1,0 +1,172 @@
+<% layout("/layouts/boilerplate") %>
+
+<!-- Page Banner -->
+<div class="page-banner">
+  <div class="container">
+    <div class="hh-hero-eyebrow" style="color:var(--gold);">
+      <span style="width:28px;height:1px;background:var(--gold);display:inline-block;"></span>
+      HavenHub
+    </div>
+    <h1>List Your Space</h1>
+    <p class="mt-2">Share your property with thousands of travelers worldwide.</p>
+  </div>
+</div>
+
+<!-- Form -->
+<section class="form-page">
+  <div class="container">
+    <div class="form-card">
+
+      <!-- Header -->
+      <div class="form-card-header">
+        <div class="form-eyebrow">New Listing</div>
+        <h2>Create a Listing</h2>
+      </div>
+
+      <!-- Body -->
+      <form action="/listings" method="POST" novalidate class="needs-validation" enctype="multipart/form-data">
+        <div class="form-card-body">
+
+          <!-- Title -->
+          <div class="form-group-hh">
+            <label class="form-label-hh">
+              Property Title <span class="label-required">*</span>
+            </label>
+            <input
+              type="text"
+              name="listing[title]"
+              class="form-input-hh form-control"
+              placeholder="e.g. Cozy Mountain Cabin in Manali"
+              required
+            >
+            <div class="valid-feedback">
+              Title looks good!
+            </div>
+            <div class="invalid-feedback">
+              Please enter title
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="form-group-hh">
+            <label class="form-label-hh">
+              Description <span class="label-required">*</span>
+            </label>
+            <textarea
+              name="listing[description]"
+              class="form-input-hh form-control"
+              placeholder="Describe your property — what makes it special, nearby attractions, amenities..."
+              required
+            ></textarea>
+            <div class="invalid-feedback">
+              Please enter valid description
+            </div>
+          </div>
+
+          <!-- Image upload -->
+          <div class="form-group-hh">
+            <label class="form-label-hh">upload listing image</label>
+            <input
+              type="file"
+              name="listing[image]"
+              class="form-input-hh form-control"
+              placeholder="https://example.com/your-image.jpg"
+            >
+          </div>
+          <!-- Category -->
+<div class="form-group-hh">
+  <label class="form-label-hh">
+    Category <span class="label-required">*</span>
+  </label>
+
+  <select
+    name="listing[category]"
+    class="form-input-hh form-control"
+    required
+  >
+    <option value="" disabled selected>Select a category</option>
+
+    <option value="trending">Trending</option>
+    <option value="rooms">Rooms</option>
+    <option value="iconic-cities">Iconic Cities</option>
+    <option value="mountain">Mountain</option>
+    <option value="castles">Castles</option>
+    <option value="pools">Pools</option>
+    <option value="camps">Camps</option>
+    <option value="farms">Farms</option>
+    <option value="arctic">Arctic</option>
+    <option value="beach">Beach</option>
+  </select>
+
+  <div class="invalid-feedback">
+    Please select a category.
+  </div>
+</div>
+          <!-- Price + Country (2 columns) -->
+          <div class="form-row-grid">
+            <div class="form-group-hh">
+              <label class="form-label-hh">
+                Price per Night (₹) <span class="label-required">*</span>
+              </label>
+              <input
+                type="number"
+                name="listing[price]"
+                class="form-input-hh form-control"
+                placeholder="e.g. 3500"
+                min="0"
+                required
+              >
+              <div class="invalid-feedback">
+                Please enter a valid price.
+              </div>
+            </div>
+            <div class="form-group-hh">
+              <label class="form-label-hh">
+                Country <span class="label-required">*</span>
+              </label>
+              <input
+                type="text"
+                name="listing[country]"
+                class="form-input-hh form-control"
+                placeholder="e.g. India"
+                required
+              >
+              <div class="invalid-feedback">
+                Please enter a valid country.
+              </div>
+            </div>
+          </div>
+
+          <!-- Location -->
+          <div class="form-group-hh mb-0">
+            <label class="form-label-hh">
+              Location / City <span class="label-required">*</span>
+            </label>
+            <input
+              type="text"
+              name="listing[location]"
+              class="form-input-hh form-control"
+              placeholder="e.g. Manali, Himachal Pradesh"
+              required
+            >
+            <div class="invalid-feedback">
+              Please enter a valid location.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="form-footer-hh">
+          <a href="/listings" class="btn-form-cancel">
+            <i class="bi bi-arrow-left"></i> Cancel
+          </a>
+          <button type="submit" class="btn-form-submit">
+            <i class="bi bi-check-lg"></i> Publish Listing
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</section>
