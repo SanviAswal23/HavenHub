@@ -11,7 +11,8 @@
 
 *Explore, list, and review properties — all in one place.*
 
-![HavenHub Banner](https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&h=400&fit=crop)
+![HavenHub Banner](<img width="574" height="340" alt="Screenshot 2026-05-11 222318" src="https://github.com/user-attachments/assets/6c990128-6be4-4bfe-912d-4c5e9d3e1f98" />
+)
 
 </div>
 
