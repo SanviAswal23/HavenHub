@@ -1,29 +1,86 @@
-# 🏠 HavenHub — Airbnb-style Listing Platform
+<div align="center">
 
-A full-stack web application inspired by Airbnb, built with Node.js, Express, MongoDB, and EJS.
+# 🏠 HavenHub
 
-🔗 **Live Demo:** https://havenhub-eq7j.onrender.com
+### A full-stack Airbnb-inspired property listing platform
 
-## Features
-- User authentication (register/login/logout) with Passport.js
-- Create, edit, and delete property listings with image upload (Cloudinary)
-- Leave and delete reviews with star ratings
-- Interactive maps with Leaflet.js / Mapbox
-- Flash messages, session management
-- Fully responsive design
+[![Live Demo](https://img.shields.io/badge/🔗_Live_Demo-HavenHub-FF5A5F?style=for-the-badge)](https://havenhub-eq7j.onrender.com)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/SanviAswal23/HavenHub)
+[![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?style=for-the-badge&logo=node.js)](https://nodejs.org)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb)](https://mongodb.com)
 
-## Tech Stack
-| Layer | Technology |
-|-------|-----------|
-| Backend | Node.js, Express.js |
-| Database | MongoDB Atlas + Mongoose |
-| Auth | Passport.js (Local Strategy) |
-| Views | EJS + ejs-mate |
-| Storage | Cloudinary |
-| Maps | Leaflet.js |
-| Hosting | Render |
+*Explore, list, and review properties — all in one place.*
 
-## Setup locally
-1. Clone the repo
-2. Run `npm install`
-3. Create a `.env` file with:
+![HavenHub Banner](https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&h=400&fit=crop)
+
+</div>
+
+---
+
+## 📌 Overview
+
+**HavenHub** is a production-deployed, full-stack web application built with the **MVC architecture** pattern. It enables users to discover and list properties, write reviews, upload images, and visualize locations on an interactive map — mirroring core features of platforms like Airbnb.
+
+This project demonstrates end-to-end software development including **REST API design**, **cloud integrations**, **secure authentication**, and **responsive UI/UX**.
+
+---
+
+## 🔗 Live Demo
+
+> **[https://havenhub-eq7j.onrender.com](https://havenhub-eq7j.onrender.com)**
+
+| Test Credentials | Value |
+|-----------------|-------|
+| You can register a new account directly on the site |  |
+
+---
+
+## ✨ Features
+
+### 🔐 Authentication & Authorization
+- Secure **Register / Login / Logout** flow using **Passport.js** Local Strategy
+- Route-level authorization — only listing owners can edit or delete their listings
+- Only review authors can delete their own reviews
+- Session persistence using **connect-mongo** (MongoDB-backed sessions)
+
+### 🏡 Property Listings (Full CRUD)
+- Create listings with title, description, location, country, and price
+- Upload and display property images via **Cloudinary** CDN
+- Edit and delete listings with ownership checks
+- Browse all listings with a clean, responsive card layout
+
+### ⭐ Reviews System
+- Authenticated users can leave star-rated reviews on any listing
+- Review authors can delete their own reviews
+- Visual star rating display on review cards
+
+### 🗺️ Interactive Maps
+- Geocoded property locations displayed on **Leaflet.js** maps
+- Location visualization on individual listing pages
+
+### 💡 UX Enhancements
+- Flash messages for success/error feedback
+- Form validation (client-side + server-side)
+- Fully responsive design across mobile, tablet, and desktop
+- Graceful error handling with custom error pages
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Runtime** | Node.js 20.x | Server-side JavaScript |
+| **Framework** | Express.js | REST routing & middleware |
+| **Database** | MongoDB Atlas + Mongoose | Data persistence & ODM |
+| **Auth** | Passport.js (Local) | Secure user authentication |
+| **Sessions** | express-session + connect-mongo | Persistent login sessions |
+| **Templating** | EJS + ejs-mate | Server-side HTML rendering |
+| **File Storage** | Cloudinary | Cloud image upload & delivery |
+| **Maps** | Leaflet.js | Interactive property maps |
+| **Deployment** | Render | Production cloud hosting |
+| **Validation** | Joi | Server-side schema validation |
+
+---
+
+## 🏗️ Architecture
