@@ -28,6 +28,7 @@ This project demonstrates end-to-end software development including **REST API d
 ## 🔗 Live Demo
 
 > **[https://havenhub-eq7j.onrender.com](https://havenhub-eq7j.onrender.com)**
+> (on opening the link just click on explore to see the website)
 
 | Test Credentials | Value |
 |-----------------|-------|
