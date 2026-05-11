@@ -75,8 +75,12 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(async(req,res,next)=>{
-  res.locals.searchListings = await Listing.find({}).limit(10);
+app.use(async (req, res, next) => {
+  try {
+    res.locals.searchListings = await Listing.find({}).limit(10);
+  } catch (err) {
+    res.locals.searchListings = []; 
+  }
   next();
 });
 app.use("/listings", listingRoutes);
