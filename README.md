@@ -4,7 +4,7 @@
 
 ### A full-stack Airbnb-inspired property listing platform
 
-[![Live Demo](https://img.shields.io/badge/🔗_Live_Demo-HavenHub-FF5A5F?style=for-the-badge)](https://havenhub-eq7j.onrender.com)
+[![Live Demo](https://img.shields.io/badge/🔗_Live_Demo-HavenHub-FF5A5F?style=for-the-badge)](https://havenhub-eq7j.onrender.com/listings)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/SanviAswal23/HavenHub)
 [![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?style=for-the-badge&logo=node.js)](https://nodejs.org)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb)](https://mongodb.com)
@@ -27,8 +27,7 @@ This project demonstrates end-to-end software development including **REST API d
 
 ## 🔗 Live Demo
 
-> **[https://havenhub-eq7j.onrender.com](https://havenhub-eq7j.onrender.com)**
-> (on opening the link just click on explore to see the website)
+> **[https://havenhub-eq7j.onrender.com](https://havenhub-eq7j.onrender.com/listings)**
 
 | Test Credentials | Value |
 |-----------------|-------|
